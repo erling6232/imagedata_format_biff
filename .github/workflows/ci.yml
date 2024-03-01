@@ -19,7 +19,6 @@ jobs:
       uses: actions/setup-python@master
       with:
         python-version: ${{ matrix.python-version }}
-        # cache: "pip"
     - name: Check package
       run: |
         python -m pip install --upgrade pip setuptools wheel
@@ -86,32 +85,6 @@ jobs:
           path: dist/*.tar.gz
 
 
-
-#  publish-to-pypi:
-#    name: Publish Python distribution to PyPi
-#    # if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
-#    needs: [build_wheels, build_sdist]
-#    runs-on: ubuntu-latest
-#    environment:
-#      name: pypi
-#    permissions:
-#      contents: read
-#      id-token: write
-#    if: github.event_name == 'release' && github.event.action == 'published'
-#    # or, alternatively, upload to PyPI on every tag starting with 'v' (remove on: release above to use this)
-#    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-#    steps:
-#      - name: Download all the dists
-#        uses: actions/download-artifact@latest
-#        with:
-#          # unpacks default artifact into dist/
-#          # if `name: artifact` is omitted, the action will create extra parent dir
-#          name: artifact
-#          path: dist
-#
-#      - name: Upload distribution to PyPI
-#        uses: pypa/gh-action-pypi-publish@release/v1
-
   pypi-publish:
     name: upload release to PyPI
     needs: [build_wheels, build_sdist]
@@ -122,7 +95,7 @@ jobs:
       contents: read
       # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write
-    # if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event_name == 'release' && github.event.action == 'published'
     steps:
       - name: Download all the dists
         uses: actions/download-artifact@v4
