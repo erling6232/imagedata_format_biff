@@ -130,7 +130,7 @@ class Test3DBiffPlugin(unittest.TestCase):
         self.assertEqual(si1.shape, si2.shape)
 
     def test_read_samle(self):
-        template = Series('data/dicom/template')
+        template = Series(os.path.join('data', 'dicom', 'template'))
         si1 = Series(
             os.path.join('data', 'biff', 'samle'),
             'none',
