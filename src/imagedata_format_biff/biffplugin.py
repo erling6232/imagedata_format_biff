@@ -7,7 +7,6 @@
 import logging
 import mimetypes
 import os.path
-import logging
 import struct
 import numpy as np
 
@@ -354,7 +353,7 @@ class BiffPlugin(AbstractPlugin):
         if self.output_sort == imagedata.formats.SORT_ON_TAG:
             for _slice in range(slices):
                 filename = archive.construct_filename(tag=(_slice,), query=query)
-                self.write_numpy_2d_3d_biff(si[:,_slice], archive, filename)
+                self.write_numpy_2d_3d_biff(si[:, _slice], archive, filename)
         else:  # self.output_sort == imagedata.formats.SORT_ON_SLICE:
             for tag in range(steps):
                 filename = archive.construct_filename(tag=(tag,), query=query)
@@ -408,7 +407,7 @@ class BiffPlugin(AbstractPlugin):
             self._write_text()
 
     def write_numpy_4d_biff(self, si, archive, filename):
-        steps, slices, ny, nx= si.shape[:]
+        steps, slices, ny, nx = si.shape[:]
         logging.debug("write_4d_numpy: si dtype {}, shape {}, sort {}".format(
             si.dtype, si.shape,
             imagedata.formats.sort_on_to_str(self.output_sort)))
