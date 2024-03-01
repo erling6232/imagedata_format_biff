@@ -41,11 +41,11 @@ jobs:
         coverage report -m
         coverage xml
         coverage html
-    - uses: actions/upload-artifact@latest
+    - uses: actions/upload-artifact@v4
       with:
         path: ./wheelhouse/*.whl
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@latest
+      uses: codecov/codecov-action@v4
       with:
         fail_ci_if_error: true
         token: ${{ secrets.CODECOV_TOKEN }}
@@ -57,7 +57,7 @@ jobs:
     #    name: code-coverage-report
     #    path: htmlcov
     #- name: Archive package
-    #  uses: actions/upload-artifact@v3
+    #  uses: actions/upload-artifact@v4
     #  with:
     #    name: imagedata
     #    path: src/dist
@@ -76,7 +76,7 @@ jobs:
       - name: Build sdist
         run: pipx run build --sdist
 
-      - uses: actions/upload-artifact@latest
+      - uses: actions/upload-artifact@v4
         with:
           path: dist/*.tar.gz
 
