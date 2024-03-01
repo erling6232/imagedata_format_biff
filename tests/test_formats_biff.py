@@ -125,7 +125,7 @@ class Test3DBiffPlugin(unittest.TestCase):
         si1 = Series(os.path.join('data', 'biff', 'time', 'time00.biff'))
         with tempfile.TemporaryDirectory() as d:
             si1.write(d, formats=['biff'])
-            si2 = Series(os.path.join(d, 'Image_00000.biff'))
+            si2 = Series(os.path.join(d, 'Image.biff'))
         self.assertEqual(si1.dtype, si2.dtype)
         self.assertEqual(si1.shape, si2.shape)
 
@@ -161,13 +161,13 @@ class Test3DBiffPlugin(unittest.TestCase):
         si1.orientation = np.array([1, 0, 0, 0, 1, 0])
         logging.debug('test_read_3d_biff: si1.tags {}'.format(si1.tags))
         with tempfile.TemporaryDirectory() as d:
-            si1.write(os.path.join(d, 'biff?Image_%05d'),
+            si1.write(os.path.join(d, 'biff', 'Image'),
                       formats=['biff'], opts=self.opts)
             # noinspection PyArgumentList
             logging.debug('test_read_3d_biff: si1 {} {} {}'.format(si1.dtype, si1.min(), si1.max()))
 
             si2 = Series(
-                os.path.join(d, 'biff', 'Image_00000.biff'),
+                os.path.join(d, 'biff', 'Image.biff'),
                 'none',
                 self.opts)
             # noinspection PyArgumentList
@@ -190,7 +190,7 @@ class Test3DBiffPlugin(unittest.TestCase):
             np.testing.assert_array_almost_equal(si1, si3, decimal=4)
             logging.debug('test_read_3d_biff: si3.slices {}'.format(si3.slices))
             logging.debug('test_read_3d_biff: si3 {} {} {}'.format(type(si3), si3.dtype, si3.shape))
-            si3.write(os.path.join(d, 'biff?Image_%05d.real'),
+            si3.write(os.path.join(d, 'biff', 'Image_%05d.real'),
                       formats=['biff'], opts=self.opts)
 
             s3 = si1 - si2
@@ -200,7 +200,7 @@ class Test3DBiffPlugin(unittest.TestCase):
             logging.debug('test_read_3d_biff: si1.tags {}'.format(si1.tags))
             logging.debug('test_read_3d_biff: si2.tags {}'.format(si2.tags))
             logging.debug('test_read_3d_biff: s3.tags {}'.format(s3.tags))
-            s3.write(os.path.join(d, 'diff?Image_%05d.real'),
+            s3.write(os.path.join(d, 'diff', 'Image_%05d.real'),
                      formats=['biff'], opts=self.opts)
 
     # @unittest.skip("skipping test_read_3d_biff_no_opt")
@@ -217,7 +217,7 @@ class Test3DBiffPlugin(unittest.TestCase):
         logging.debug('test_write_3d_biff_no_opt: si1 {} {} {} {}'.format(type(si1), si1.dtype, si1.min(), si1.max()))
         logging.debug('test_write_3d_biff_no_opt: si1.slices {}'.format(si1.slices))
         with tempfile.TemporaryDirectory() as d:
-            si1.write(os.path.join(d, 'biff?Image_%05d'),
+            si1.write(os.path.join(d, 'biff', 'Image_%05d'),
                       formats=['biff'])
 
 
@@ -249,7 +249,7 @@ class Test4DWriteBiffPlugin(unittest.TestCase):
             imagedata.formats.INPUT_ORDER_TIME,
             self.opts)
         with tempfile.TemporaryDirectory() as d:
-            si1.write('{}?Image%05d.biff'.format(d),
+            si1.write(os.path.join('{}'.format(d), 'Image%05d.biff'),
                       formats=['biff'])
             si2 = Series(
                 d,
@@ -295,7 +295,7 @@ class Test4DBiffPlugin(unittest.TestCase):
         si1.output_dir = 'single'
         # si1.output_dir = 'multi'
         with tempfile.TemporaryDirectory() as d:
-            si1.write(os.path.join(d, 'biff?Image_%05d.us'),
+            si1.write(os.path.join(d, 'biff', 'Image_%05d.us'),
                       formats=['biff'], opts=self.opts)
 
             # Read back the BIFF data and verify that the header was modified
