@@ -920,3 +920,4 @@ class BiffPlugin(AbstractPlugin):
         if rest != 0:
             logging.debug('_write_band: filling %d bytes' % (512 - rest))
             self.f.write((512 - rest) * b'\x00')
+        self.f.flush()
