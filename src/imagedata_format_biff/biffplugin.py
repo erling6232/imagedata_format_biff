@@ -14,8 +14,6 @@ import imagedata.formats
 import imagedata.axis
 from imagedata.formats.abstractplugin import AbstractPlugin
 from imagedata.archives.abstractarchive import AbstractArchive
-from imagedata.archives.filesystemarchive import FilesystemArchive
-from imagedata.transports.filetransport import FileTransport
 
 logger = logging.getLogger(__name__)
 
@@ -360,7 +358,7 @@ class BiffPlugin(AbstractPlugin):
                 self.write_numpy_2d_3d_biff(si[tag], archive, filename)
 
     def write_numpy_2d_3d_biff(self, si, archive, filename):
-        logging.debug("write_4d_numpy: si dtype {}, shape {}".format(
+        logging.debug("write_2d_3d_numpy: si dtype {}, shape {}".format(
             si.dtype, si.shape))
 
         if np.issubdtype(si.dtype, np.floating):
@@ -374,25 +372,6 @@ class BiffPlugin(AbstractPlugin):
         if len(os.path.splitext(filename)[1]) == 0:
             filename = filename + '.biff'
 
-        # root: str = archive.root
-        # if issubclass(type(archive.transport), FileTransport) and \
-        #         issubclass(type(archive), FilesystemArchive):
-        #     filename = os.path.join(root, filename)
-        #     # Short-cut for local files
-        #     os.makedirs(os.path.dirname(filename), exist_ok=True)
-        #     with open(filename, 'wb') as f:
-        #         self._open_image(f, 'w', arr)
-        #         iband = 0
-        #         if arr.ndim < 3:
-        #             self._write_band(iband, arr)
-        #         else:
-        #             for _slice in range(si.slices):
-        #                 self._write_band(iband, arr[_slice])
-        #                 iband += 1
-        #         logging.debug('BiffPlugin.write_numpy_2d_3d_biff: filename {}'.format(f))
-        #         self._write_text()
-        #     return
-        #
         with archive.open(filename, 'wb') as f:
             self._open_image(f, 'w', arr)
 
@@ -400,7 +379,7 @@ class BiffPlugin(AbstractPlugin):
             if arr.ndim < 3:
                 self._write_band(iband, arr)
             else:
-                for _slice in range(si.slices):
+                for _slice in range(arr.shape[0]):
                     self._write_band(iband, arr[_slice])
                     iband += 1
             logging.debug('BiffPlugin.write_numpy_2d_3d_biff: filename {}'.format(f))
@@ -777,10 +756,11 @@ class BiffPlugin(AbstractPlugin):
         if self.output_dir == 'single':
             self.nbands = self.slices * len(self.tags[0])
         else:  # self.output_dir == 'multi'
-            if self.output_sort == imagedata.formats.SORT_ON_TAG:
-                self.nbands = len(self.tags[0])
+            if self.output_sort == imagedata.formats.SORT_ON_TAG and arr.ndim > 3:
+                # self.nbands = len(self.tags[0])
+                self.nbands = arr.shape[-4]
             else:  # self.output_sort == imagedata.formats.SORT_ON_SLICE:
-                self.nbands = self.slices
+                self.nbands = arr.shape[-3]
         # logging.debug('_set_info: self.nbands {}'.format(self.nbands))
         self.bands = {}
         for bandnr in range(self.nbands):
@@ -879,7 +859,6 @@ class BiffPlugin(AbstractPlugin):
             rest += 512
         logging.debug('_write_text: skipping %d bytes' % rest)
         self.f.write(rest * b'\x00')
-        self.f.flush()
 
     def _write_band(self, bandnr, arr):
         """Write a BIFF band to file
@@ -921,4 +900,3 @@ class BiffPlugin(AbstractPlugin):
         if rest != 0:
             logging.debug('_write_band: filling %d bytes' % (512 - rest))
             self.f.write((512 - rest) * b'\x00')
-        self.f.flush()

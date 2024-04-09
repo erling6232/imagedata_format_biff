@@ -291,8 +291,49 @@ class Test4DBiffPlugin(unittest.TestCase):
                 os.path.join(d, 'biff'),
                 imagedata.formats.INPUT_ORDER_TIME,
                 self.opts_3x3)
+        self.assertEqual('biff', si2.input_format)
         self.assertEqual(si1.shape, si2.shape)
         np.testing.assert_array_equal(si1, si2)
+
+    def test_write_biff_4D_multi_slice(self):
+        si = Series(
+            os.path.join('data', 'biff', 'time.zip?time/'),
+            imagedata.formats.INPUT_ORDER_TIME,
+            self.opts)
+        self.assertEqual('biff', si.input_format)
+        with tempfile.TemporaryDirectory() as d:
+            si.write(d, opts={
+                'output_dir': 'multi',
+                'output_sort': imagedata.formats.SORT_ON_SLICE
+            })
+            newsi = Series(d, imagedata.formats.INPUT_ORDER_TIME)
+        self.assertEqual('biff', newsi.input_format)
+        self.assertEqual(si.shape, newsi.shape)
+        np.testing.assert_array_equal(si, newsi)
+        # compare_headers(self, si, newsi)
+
+    def test_write_biff_4D_multi_tag(self):
+        si = Series(
+            os.path.join('data', 'biff', 'time.zip?time/'),
+            imagedata.formats.INPUT_ORDER_TIME,
+            self.opts)
+        self.assertEqual('biff', si.input_format)
+        with tempfile.TemporaryDirectory() as d:
+            si.write(d, opts={
+                'output_dir': 'multi',
+                'output_sort': imagedata.formats.SORT_ON_TAG
+            })
+            newsi = Series(
+                d,
+                imagedata.formats.INPUT_ORDER_TIME,
+                opts={
+                    'input_sort': imagedata.formats.SORT_ON_TAG
+                }
+            )
+        self.assertEqual('biff', newsi.input_format)
+        self.assertEqual(si.shape, newsi.shape)
+        np.testing.assert_array_equal(si, newsi)
+        # compare_headers(self, si, newsi)
 
 
 class TestWriteZipBiffPlugin(unittest.TestCase):
