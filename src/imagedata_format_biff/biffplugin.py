@@ -374,25 +374,25 @@ class BiffPlugin(AbstractPlugin):
         if len(os.path.splitext(filename)[1]) == 0:
             filename = filename + '.biff'
 
-        root: str = archive.root
-        if issubclass(type(archive.transport), FileTransport) and \
-                issubclass(type(archive), FilesystemArchive):
-            filename = os.path.join(root, filename)
-            # Short-cut for local files
-            os.makedirs(os.path.dirname(filename), exist_ok=True)
-            with open(filename, 'wb') as f:
-                self._open_image(f, 'w', arr)
-                iband = 0
-                if arr.ndim < 3:
-                    self._write_band(iband, arr)
-                else:
-                    for _slice in range(si.slices):
-                        self._write_band(iband, arr[_slice])
-                        iband += 1
-                logging.debug('BiffPlugin.write_numpy_2d_3d_biff: filename {}'.format(f))
-                self._write_text()
-            return
-
+        # root: str = archive.root
+        # if issubclass(type(archive.transport), FileTransport) and \
+        #         issubclass(type(archive), FilesystemArchive):
+        #     filename = os.path.join(root, filename)
+        #     # Short-cut for local files
+        #     os.makedirs(os.path.dirname(filename), exist_ok=True)
+        #     with open(filename, 'wb') as f:
+        #         self._open_image(f, 'w', arr)
+        #         iband = 0
+        #         if arr.ndim < 3:
+        #             self._write_band(iband, arr)
+        #         else:
+        #             for _slice in range(si.slices):
+        #                 self._write_band(iband, arr[_slice])
+        #                 iband += 1
+        #         logging.debug('BiffPlugin.write_numpy_2d_3d_biff: filename {}'.format(f))
+        #         self._write_text()
+        #     return
+        #
         with archive.open(filename, 'wb') as f:
             self._open_image(f, 'w', arr)
 
@@ -879,6 +879,7 @@ class BiffPlugin(AbstractPlugin):
             rest += 512
         logging.debug('_write_text: skipping %d bytes' % rest)
         self.f.write(rest * b'\x00')
+        self.f.flush()
 
     def _write_band(self, bandnr, arr):
         """Write a BIFF band to file
