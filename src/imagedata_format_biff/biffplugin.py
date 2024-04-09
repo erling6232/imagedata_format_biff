@@ -292,7 +292,7 @@ class BiffPlugin(AbstractPlugin):
         logger.debug('BiffPlugin.write_4d_numpy: destination {}'.format(destination))
         archive: AbstractArchive = destination['archive']
         archive.set_member_naming_scheme(
-            fallback='Image_{:05d}.biff',
+            fallback='Image_{0:05d}.biff',
             level=max(0, si.ndim-3),
             default_extension='.biff',
             extensions=self.extensions
