@@ -10,7 +10,6 @@ Imagedata plugin for biff image files.
 
 .. |Docs Badge| image:: https://readthedocs.org/projects/imagedata/badge/
     :alt: Documentation Status
-    :scale: 100%
     :target: https://imagedata.readthedocs.io
 
 .. |buildstatus| image:: https://github.com/erling6232/imagedata_format_biff/actions/workflows/ci.yml/badge.svg
