@@ -12,6 +12,7 @@ import imagedata.cmdline
 import imagedata.readdata
 import imagedata.formats
 from imagedata.series import Series
+from imagedata.collections import Cohort
 
 from imagedata import plugins
 sys.path.append(os.path.abspath('../src'))
@@ -334,6 +335,11 @@ class Test4DBiffPlugin(unittest.TestCase):
         self.assertEqual(si.shape, newsi.shape)
         np.testing.assert_array_equal(si, newsi)
         # compare_headers(self, si, newsi)
+
+    def test_write_cohort(self):
+        cohort = Cohort('data/dicom/time')
+        with tempfile.TemporaryDirectory() as d:
+            cohort.write(d, formats=['biff'])
 
 
 class TestWriteZipBiffPlugin(unittest.TestCase):
