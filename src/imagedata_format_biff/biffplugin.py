@@ -6,6 +6,7 @@
 
 import logging
 import mimetypes
+from collections import namedtuple
 import os.path
 import struct
 import numpy as np
@@ -116,6 +117,7 @@ class BiffPlugin(AbstractPlugin):
         info = {}
         self.status = None
         self.f = f
+        info['filename'] = f.name
 
         if hdr.input_order == 'auto':
             hdr.input_order = 'none'
@@ -184,35 +186,49 @@ class BiffPlugin(AbstractPlugin):
             hdr: Header
         """
 
+        info, img = image_list[0]
+        hdr.seriesDescription = os.path.basename(info['filename'])
         hdr.photometricInterpretation = 'MONOCHROME2'
         hdr.color = False
-        axes = list()
         nt = nz = 1
-        axes.append(imagedata.axis.UniformLengthAxis(
+        row_axis = imagedata.axis.UniformLengthAxis(
             'row',
             0,
-            self._y_size())
+            self._y_size()
         )
-        axes.append(imagedata.axis.UniformLengthAxis(
+        column_axis = imagedata.axis.UniformLengthAxis(
             'column',
             0,
-            self._x_size())
+            self._x_size()
         )
 
         if si.ndim > 2:
             nz = si.shape[-3]
-            axes.insert(0, imagedata.axis.UniformLengthAxis(
+            slice_axis = imagedata.axis.UniformLengthAxis(
                 'slice',
                 0,
-                nz)
-                        )
-        if si.ndim > 3:
-            nt = si.shape[-4]
-            axes.insert(0, imagedata.axis.UniformLengthAxis(
-                imagedata.formats.input_order_to_dirname_str(hdr.input_order),
-                0,
-                nt)
-                        )
+                nz
+            )
+            if si.ndim > 3:
+                nt = si.shape[-4]
+                tag_axis = imagedata.axis.UniformLengthAxis(
+                    imagedata.formats.input_order_to_dirname_str(hdr.input_order),
+                    0,
+                    nt
+                )
+                Axes = namedtuple('Axes', [
+                    imagedata.formats.input_order_to_dirname_str(hdr.input_order),
+                    'slice', 'row', 'column'
+                ])
+                axes = Axes(tag_axis, slice_axis, row_axis, column_axis)
+            else:
+                Axes = namedtuple('Axes', [
+                    'slice', 'row', 'column'
+                ])
+                axes = Axes(slice_axis, row_axis, column_axis)
+        else:
+            Axes = namedtuple('Axes', ['row', 'column'])
+            axes = Axes(row_axis, column_axis)
         hdr.axes = axes
         hdr.tags = {}
         for _slice in range(nz):
