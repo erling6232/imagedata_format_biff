@@ -212,12 +212,12 @@ class BiffPlugin(AbstractPlugin):
             if si.ndim > 3:
                 nt = si.shape[-4]
                 tag_axis = imagedata.axis.UniformLengthAxis(
-                    imagedata.formats.input_order_to_dirname_str(hdr.input_order),
+                    hdr.input_order,
                     0,
                     nt
                 )
                 Axes = namedtuple('Axes', [
-                    imagedata.formats.input_order_to_dirname_str(hdr.input_order),
+                    hdr.input_order,
                     'slice', 'row', 'column'
                 ])
                 axes = Axes(tag_axis, slice_axis, row_axis, column_axis)
@@ -232,7 +232,9 @@ class BiffPlugin(AbstractPlugin):
         hdr.axes = axes
         hdr.tags = {}
         for _slice in range(nz):
-            hdr.tags[_slice] = np.array([t for t in range(nt)])
+            hdr.tags[_slice] = np.empty(nt, dtype=tuple)
+            for t in range(nt):
+                hdr.tags[_slice][t] = (t,)
 
     def write_3d_numpy(self, si, destination, opts):
         """Write 3D numpy image as Xite biff file

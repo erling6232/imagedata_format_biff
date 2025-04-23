@@ -12,7 +12,7 @@ import imagedata.cmdline
 import imagedata.readdata
 import imagedata.formats
 from imagedata.series import Series
-from imagedata.collections import Cohort
+from imagedata.collection import Cohort
 
 from imagedata import plugins
 sys.path.append(os.path.abspath('../src'))
