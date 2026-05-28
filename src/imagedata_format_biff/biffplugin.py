@@ -259,7 +259,7 @@ class BiffPlugin(AbstractPlugin):
         archive: AbstractArchive = destination['archive']
         archive.set_member_naming_scheme(
             fallback='Image.biff',
-            level=max(0, si.ndim-3),
+            level=max(0, si.ndim - 3),
             default_extension='.biff',
             extensions=self.extensions
         )
@@ -318,7 +318,7 @@ class BiffPlugin(AbstractPlugin):
         archive: AbstractArchive = destination['archive']
         archive.set_member_naming_scheme(
             fallback='Image_{0:05d}.biff',
-            level=max(0, si.ndim-3),
+            level=max(0, si.ndim - 3),
             default_extension='.biff',
             extensions=self.extensions
         )
